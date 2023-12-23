@@ -22,12 +22,12 @@ public class Szavazas {
     private Long id;
 
 
-    @Column(name = "szavazas_id", unique = true)
-    private String szavazas_id;
+    @Column(name = "szavazasId", unique = true)
+    private String szavazasId;
 
     @PrePersist
     public void generateVotingId() {
-        this.szavazas_id = "OJ" + this.id;
+        this.szavazasId = "OJ" + this.id;
     }
 
     private LocalDateTime idopont;

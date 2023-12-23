@@ -1,9 +1,11 @@
 package com.aron.voting.dto;
 
 import com.aron.voting.dao.model.Szavazat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record SzavazatDTO(
-        String kepviselo,
-        Szavazat szavazat
+        @NotBlank String kepviselo,
+        @NotNull Szavazat szavazat
 ) {
 }
