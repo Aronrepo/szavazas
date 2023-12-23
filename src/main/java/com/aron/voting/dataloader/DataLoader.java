@@ -22,8 +22,10 @@ public class DataLoader implements CommandLineRunner {
         Kepviselo kepviselo2 = Kepviselo.builder().build();
         Kepviselo kepviselo3 = Kepviselo.builder().build();
         Kepviselo kepviselo4 = Kepviselo.builder().build();
+        Kepviselo kepviselo5 = Kepviselo.builder().build();
+        Kepviselo kepviselo6 = Kepviselo.builder().build();
 
-        kepviseloRepository.saveAll(Set.of(kepviselo1, kepviselo2, kepviselo3, kepviselo4));
+        kepviseloRepository.saveAll(Set.of(kepviselo1, kepviselo2, kepviselo3, kepviselo4, kepviselo5, kepviselo6));
 
     }
 }
