@@ -2,6 +2,8 @@ package com.aron.voting.config;
 
 import com.aron.voting.exception.ElnoknekNincsSzavazataException;
 import com.aron.voting.exception.KepviseloNotFoundException;
+import com.aron.voting.exception.SzavazasAzonosIdobenException;
+import com.aron.voting.exception.TobbMintEgySzavazatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TooManyListenersException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -81,4 +84,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleElnoknekNincsSzavazataException(ElnoknekNincsSzavazataException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
+
+    @ExceptionHandler(TobbMintEgySzavazatException.class)
+    public ResponseEntity<String> handleTooManyListenersException(TobbMintEgySzavazatException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+    @ExceptionHandler(SzavazasAzonosIdobenException.class)
+    public ResponseEntity<String> handleSzavazasAzonosIdobenException(SzavazasAzonosIdobenException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
 }
