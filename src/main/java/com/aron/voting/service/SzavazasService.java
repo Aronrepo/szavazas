@@ -1,10 +1,7 @@
 package com.aron.voting.service;
 
 import com.aron.voting.dao.model.*;
-import com.aron.voting.dto.KepviseloSzavazatDTO;
-import com.aron.voting.dto.SzavazasEredmenyDTO;
-import com.aron.voting.dto.SzavazasValaszDTO;
-import com.aron.voting.dto.UjSzavazasDTO;
+import com.aron.voting.dto.*;
 import com.aron.voting.exception.*;
 import com.aron.voting.repositories.SzavazasRepository;
 import com.aron.voting.repositories.SzavazatokRepository;
@@ -12,9 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,7 +57,8 @@ public class SzavazasService {
 
         szavazas.setSzavazatok(szavazatok);
 
-        boolean elnoknekVanSzavazata = szavazas.getSzavazatok().stream().anyMatch(szavazatok1 -> szavazatok1.getKepviselo().equals(elnok));
+        boolean elnoknekVanSzavazata = szavazas.getSzavazatok().stream()
+                .anyMatch(szavazatok1 -> szavazatok1.getKepviselo().equals(elnok));
 
         if(!elnoknekVanSzavazata) {
             throw new ElnoknekNincsSzavazataException("Az elnöknek nincs szavazata");
@@ -106,7 +105,10 @@ public class SzavazasService {
             throw new SzavazasNotFoundException("Nincs ilyen szavazas: " + szavazasAzonosito);
         }
 
-        String szavazat = szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getKepviselo().getKepviseloKod().equals(kepviseloAzonosito)).findFirst().orElse(null).getSzavazat().toString();
+        String szavazat = szavazas.getSzavazatok().stream()
+                .filter(szavazatok -> szavazatok.getKepviselo()
+                        .getKepviseloKod().equals(kepviseloAzonosito))
+                .findFirst().orElse(null).getSzavazat().toString();
 
         return new KepviseloSzavazatDTO(szavazat);
     }
@@ -118,31 +120,58 @@ public class SzavazasService {
             throw new SzavazasNotFoundException("Nincs ilyen szavazas: " + szavazasAzonosito);
         }
 
+        Eredmeny eredmeny = eredmenyKiszamolo(szavazas);
         int kepviselokSzama = szavazas.getSzavazatok().size();
         int igenekSzama = (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("i")).count();
         int nemekSzama = (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("n")).count();
         int tartozkodokSzama = (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("t")).count();
-
-        Eredmeny eredmeny;
-
-        switch (szavazas.getTipus().name()) {
-            case "j":
-                eredmeny = ELFOGADOTT_EREDMENY;
-                break;
-            case "e":
-                eredmeny = (igenekSzama > kepviselokSzama / 2) ? ELFOGADOTT_EREDMENY : ELUTASITOTT_EREDMENY;
-                break;
-            case "m":
-                eredmeny = (igenekSzama > OSSZES_KEPVISELO_FELE) ? ELFOGADOTT_EREDMENY : ELUTASITOTT_EREDMENY;
-                break;
-            default:
-                throw new IllegalArgumentException("Ismeretlen szavazas tipus: " + szavazas.getTipus().name());
-        }
 
         return szavazasEredmenyDTOkeszito(eredmeny, kepviselokSzama, igenekSzama, nemekSzama, tartozkodokSzama);
     }
 
     private SzavazasEredmenyDTO szavazasEredmenyDTOkeszito(Eredmeny eredmeny, int kepviselokSzama, int igenekSzama, int nemekSzama, int tartozkodokSzama) {
         return new SzavazasEredmenyDTO(eredmeny.toString(), kepviselokSzama, igenekSzama, nemekSzama, tartozkodokSzama);
+    }
+
+    public Map<String, List<NapiSzavazasDTO>> napiSzavazasLekerdezese(LocalDate date) {
+        List<Szavazas> szavazasok = szavazasRepository.findByIdopontBetween(LocalDateTime.of(date, LocalTime.MIN), LocalDateTime.of(date, LocalTime.MAX));
+        List<NapiSzavazasDTO> napiSzavazasDTOS = szavazasok.stream().map(szavazas -> szavazasKonvertalasaSzavazasDTOra(szavazas))
+                .toList();
+
+        Map<String, List<NapiSzavazasDTO>> result = new HashMap<>();
+        result.put("szavazasok", napiSzavazasDTOS);
+        return result;
+    }
+
+    private NapiSzavazasDTO szavazasKonvertalasaSzavazasDTOra(Szavazas szavazas) {
+        return new NapiSzavazasDTO(szavazas.getIdopont(),
+                szavazas.getTargy(),
+                szavazas.getTipus().toString(),
+                szavazas.getElnok().getKepviseloKod(),
+                eredmenyKiszamolo(szavazas).toString(),
+                szavazas.getSzavazatok().size(),
+                szavazatokKonvertalasaEredmenySzavazatDTOra(szavazas.getSzavazatok()));
+    }
+
+    private Set<EredmenySzavazatDTO> szavazatokKonvertalasaEredmenySzavazatDTOra(Set<Szavazatok> szavazatok) {
+        return szavazatok.stream()
+                .map(szavazatok1 -> new EredmenySzavazatDTO(szavazatok1.getKepviselo().getKepviseloKod(), szavazatok1.getSzavazat().toString()))
+                .collect(Collectors.toSet());
+    }
+
+    private Eredmeny eredmenyKiszamolo(Szavazas szavazas) {
+        int igenekSzama = (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("i")).count();
+        int kepviselokSzama = szavazas.getSzavazatok().size();
+
+        switch (szavazas.getTipus().name()) {
+            case "j":
+                return ELFOGADOTT_EREDMENY;
+            case "e":
+                return (igenekSzama > kepviselokSzama / 2) ? ELFOGADOTT_EREDMENY : ELUTASITOTT_EREDMENY;
+            case "m":
+                return (igenekSzama > OSSZES_KEPVISELO_FELE) ? ELFOGADOTT_EREDMENY : ELUTASITOTT_EREDMENY;
+            default:
+                throw new IllegalArgumentException("Ismeretlen szavazas tipus: " + szavazas.getTipus().name());
+        }
     }
 }
