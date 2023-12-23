@@ -11,4 +11,7 @@ import java.time.LocalDateTime;
 public interface SzavazasRepository extends JpaRepository<Szavazas, Long> {
     Szavazas findSzavazasByIdopont(LocalDateTime localDateTime);
 
+    Szavazas findBySzavazasId(String azonosito);
+
+
 }

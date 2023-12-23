@@ -1,5 +1,6 @@
 package com.aron.voting.controller;
 
+import com.aron.voting.dto.KepviseloSzavazatDTO;
 import com.aron.voting.dto.SzavazasValaszDTO;
 import com.aron.voting.dto.UjSzavazasDTO;
 import com.aron.voting.service.SzavazasService;
@@ -28,5 +29,11 @@ public class SzavazasController {
         String szavazasId = szavazasService.ujSzavazas(ujSzavazas);
         SzavazasValaszDTO szavazasValaszDTO = new SzavazasValaszDTO(szavazasId);
         return new ResponseEntity<>(szavazasValaszDTO, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/szavazat")
+    public ResponseEntity<KepviseloSzavazatDTO> kepviseloSzavazatLekerdezese(@RequestParam String szavazas, String kepviselo
+    ) {
+        return new ResponseEntity<>(szavazasService.kepviseloSzavazatLekerdezese(szavazas, kepviselo), HttpStatus.OK);
     }
 }
