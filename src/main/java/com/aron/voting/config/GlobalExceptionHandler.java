@@ -1,9 +1,6 @@
 package com.aron.voting.config;
 
-import com.aron.voting.exception.ElnoknekNincsSzavazataException;
-import com.aron.voting.exception.KepviseloNotFoundException;
-import com.aron.voting.exception.SzavazasAzonosIdobenException;
-import com.aron.voting.exception.TobbMintEgySzavazatException;
+import com.aron.voting.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -77,7 +74,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(KepviseloNotFoundException.class)
     public ResponseEntity<String> handleKepviseloNotFoundException(KepviseloNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(ElnoknekNincsSzavazataException.class)
@@ -92,6 +89,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SzavazasAzonosIdobenException.class)
     public ResponseEntity<String> handleSzavazasAzonosIdobenException(SzavazasAzonosIdobenException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(SzavazasNotFoundException.class)
+    public ResponseEntity<String> handleSzavazasNotFoundException(SzavazasNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
 }
