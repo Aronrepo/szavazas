@@ -26,7 +26,7 @@ public class SzavazasController {
     public ResponseEntity<?> hozzaadUjSzavazast(@Valid @RequestBody UjSzavazasDTO ujSzavazas) {
 
         String szavazasId = szavazasService.ujSzavazas(ujSzavazas);
-        SzavazasValaszDTO szavazasValaszDTO = new SzavazasValaszDTO(Map.of("szavazasId", szavazasId));
+        SzavazasValaszDTO szavazasValaszDTO = new SzavazasValaszDTO(szavazasId);
         return new ResponseEntity<>(szavazasValaszDTO, HttpStatus.CREATED);
     }
 }
