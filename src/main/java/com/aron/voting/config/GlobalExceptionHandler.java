@@ -1,5 +1,6 @@
 package com.aron.voting.config;
 
+import com.aron.voting.exception.KepviseloNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -68,5 +69,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body("Invalid date-time format. Please use the format: yyyy-MM-ddTHH:mm:ss");
+    }
+
+    @ExceptionHandler(KepviseloNotFoundException.class)
+    public ResponseEntity<String> handleKepviseloNotFoundException(KepviseloNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 }
