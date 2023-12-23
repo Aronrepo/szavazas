@@ -6,6 +6,7 @@ import com.aron.voting.dao.model.Szavazat;
 import com.aron.voting.dao.model.Szavazatok;
 import com.aron.voting.dto.SzavazasValaszDTO;
 import com.aron.voting.dto.UjSzavazasDTO;
+import com.aron.voting.exception.ElnoknekNincsSzavazataException;
 import com.aron.voting.repositories.SzavazasRepository;
 import com.aron.voting.repositories.SzavazatokRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,12 @@ public class SzavazasService {
                 .collect(Collectors.toSet());
 
         szavazas.setSzavazatok(szavazatok);
+
+        boolean elnoknekVanSzavazata = szavazas.getSzavazatok().stream().anyMatch(szavazatok1 -> szavazatok1.getKepviselo().equals(elnok));
+
+        if(!elnoknekVanSzavazata) {
+            throw new ElnoknekNincsSzavazataException("Az elnöknek nincs szavazata");
+        }
 
         Szavazas savedSzavazas = szavazasRepository.save(szavazas);
 
