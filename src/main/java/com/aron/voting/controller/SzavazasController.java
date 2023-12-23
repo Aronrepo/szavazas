@@ -1,9 +1,6 @@
 package com.aron.voting.controller;
 
-import com.aron.voting.dto.KepviseloSzavazatDTO;
-import com.aron.voting.dto.SzavazasEredmenyDTO;
-import com.aron.voting.dto.SzavazasValaszDTO;
-import com.aron.voting.dto.UjSzavazasDTO;
+import com.aron.voting.dto.*;
 import com.aron.voting.service.SzavazasService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -42,5 +41,11 @@ public class SzavazasController {
     public ResponseEntity<SzavazasEredmenyDTO> szavazasEredmenyDTOkeszito(@RequestParam String szavazas
     ) {
         return new ResponseEntity<>(szavazasService.szavazasEredmenyLekerdezese(szavazas), HttpStatus.OK);
+    }
+
+    @GetMapping("/napi-szavazasok")
+    public ResponseEntity <Map<String, List<NapiSzavazasDTO>>> napiSzavazasLekerdezese(@RequestParam LocalDate nap
+    ) {
+        return new ResponseEntity<>(szavazasService.napiSzavazasLekerdezese(nap), HttpStatus.OK);
     }
 }
