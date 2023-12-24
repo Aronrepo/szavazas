@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,6 +28,9 @@ public class SzavazasService {
     private static final Eredmeny ELFOGADOTT_EREDMENY = Eredmeny.F;
     private static final Eredmeny ELUTASITOTT_EREDMENY = Eredmeny.U;
     private static final int OSSZES_KEPVISELO_FELE = 100;
+
+    private static final Tipus EGYSZERU_TIPUS = Tipus.e;
+    private static final Tipus MINOSITETT_TIPUS = Tipus.m;
 
     @Autowired
     public SzavazasService(KepviseloService kepviseloService, SzavazasRepository szavazasRepository, SzavazatokRepository szavazatokRepository) {
@@ -172,6 +177,16 @@ public class SzavazasService {
                 return (igenekSzama > OSSZES_KEPVISELO_FELE) ? ELFOGADOTT_EREDMENY : ELUTASITOTT_EREDMENY;
             default:
                 throw new IllegalArgumentException("Ismeretlen szavazas tipus: " + szavazas.getTipus().name());
+        }
+    }
+
+    public KepviseloAtlagDTO kepviseloAtlagLekerdezese(LocalDate idoszakKezdete, LocalDate idoszakVege) {
+        Optional optionalDouble = szavazasRepository.findAverageAttendanceByTimePeriod(EGYSZERU_TIPUS, MINOSITETT_TIPUS, LocalDateTime.of(idoszakKezdete, LocalTime.MIN), LocalDateTime.of(idoszakVege, LocalTime.MAX));
+        if(optionalDouble.isEmpty()) {
+            throw new IdoszakUresException("Az időkban nem volt szavazás");
+        } else {
+            BigDecimal szavazasokDouble = new BigDecimal(optionalDouble.get().toString()).setScale(2, RoundingMode.HALF_UP);
+            return new KepviseloAtlagDTO(szavazasokDouble);
         }
     }
 }
