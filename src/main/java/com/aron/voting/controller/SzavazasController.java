@@ -48,4 +48,9 @@ public class SzavazasController {
     ) {
         return new ResponseEntity<>(szavazasService.napiSzavazasLekerdezese(nap), HttpStatus.OK);
     }
+
+    @GetMapping("/kepviselo-reszvetel-atlag")
+    public ResponseEntity <KepviseloAtlagDTO> kepviseloAtlagLekerdezese(@RequestParam LocalDate idoszakKezdete, LocalDate idoszakVege) {
+        return new ResponseEntity<>(szavazasService.kepviseloAtlagLekerdezese(idoszakKezdete, idoszakVege), HttpStatus.OK);
+    }
 }
