@@ -113,7 +113,7 @@ public class SzavazasService {
         String szavazat = szavazas.getSzavazatok().stream()
                 .filter(szavazatok -> szavazatok.getKepviselo()
                         .getKepviseloKod().equals(kepviseloAzonosito))
-                .findFirst().orElse(null).getSzavazat().toString();
+                .findFirst().orElseThrow(() -> new KepviseloNotFoundException("Nincs ilyen kepviselo az adott szavazáson: " + kepviseloAzonosito)).getSzavazat().toString();
 
         return new KepviseloSzavazatDTO(szavazat);
     }
