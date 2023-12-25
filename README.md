@@ -11,6 +11,7 @@ szavazások adatainak rögzítését és lekérdezhetőségét biztosítja.
     - [Installálás](#installálás)
 - [Használat](#használat)
 - [Felhasznált technológiák](#felhasznált-technológiák)
+- [Tesztek](#tesztek)
 - [Licensz](#licensz)
 
 ## Jellemzők
@@ -55,6 +56,10 @@ Postman dokumentáció: https://documenter.getpostman.com/view/25488726/2s9Ykt4J
 - Java
 - Spring Boot
 - H2 Adatbázis
+
+## Tesztek
+
+Egyedül a SzavazasService ujSzavazas() metódusához készült két unit teszt
 
 ### Licensz
 
