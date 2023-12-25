@@ -126,16 +126,32 @@ public class SzavazasService {
         }
 
         Eredmeny eredmeny = eredmenyKiszamolo(szavazas);
-        int kepviselokSzama = szavazas.getSzavazatok().size();
-        int igenekSzama = (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("i")).count();
-        int nemekSzama = (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("n")).count();
-        int tartozkodokSzama = (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("t")).count();
+        int kepviselokSzama = kepviselokSzamaKiszamolo(szavazas);
+        int igenekSzama = igenekSzamaKiszamolo(szavazas);
+        int nemekSzama = nemekSzamaKiszamolo(szavazas);
+        int tartozkodokSzama = tartozkodokSzamaKiszamolo(szavazas);
 
         return szavazasEredmenyDTOkeszito(eredmeny, kepviselokSzama, igenekSzama, nemekSzama, tartozkodokSzama);
     }
 
     private SzavazasEredmenyDTO szavazasEredmenyDTOkeszito(Eredmeny eredmeny, int kepviselokSzama, int igenekSzama, int nemekSzama, int tartozkodokSzama) {
         return new SzavazasEredmenyDTO(eredmeny.toString(), kepviselokSzama, igenekSzama, nemekSzama, tartozkodokSzama);
+    }
+
+    private int kepviselokSzamaKiszamolo(Szavazas szavazas) {
+        return szavazas.getSzavazatok().size();
+    }
+
+    private int igenekSzamaKiszamolo(Szavazas szavazas) {
+        return (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("i")).count();
+    }
+
+    private int nemekSzamaKiszamolo(Szavazas szavazas) {
+        return (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("n")).count();
+    }
+
+    private int tartozkodokSzamaKiszamolo(Szavazas szavazas) {
+        return (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("t")).count();
     }
 
     public Map<String, List<NapiSzavazasDTO>> napiSzavazasLekerdezese(LocalDate date) {
@@ -165,8 +181,8 @@ public class SzavazasService {
     }
 
     private Eredmeny eredmenyKiszamolo(Szavazas szavazas) {
-        int igenekSzama = (int) szavazas.getSzavazatok().stream().filter(szavazatok -> szavazatok.getSzavazat().name().equals("i")).count();
-        int kepviselokSzama = szavazas.getSzavazatok().size();
+        int igenekSzama = igenekSzamaKiszamolo(szavazas);
+        int kepviselokSzama = kepviselokSzamaKiszamolo(szavazas);
 
         switch (szavazas.getTipus().name()) {
             case "j":
