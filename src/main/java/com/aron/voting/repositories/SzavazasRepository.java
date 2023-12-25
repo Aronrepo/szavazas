@@ -1,6 +1,5 @@
 package com.aron.voting.repositories;
 
-import com.aron.voting.dao.model.Kepviselo;
 import com.aron.voting.dao.model.Szavazas;
 import com.aron.voting.dao.model.Tipus;
 import org.springframework.data.jpa.repository.JpaRepository;
